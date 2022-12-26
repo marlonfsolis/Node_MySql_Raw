@@ -7,5 +7,4 @@ AND (IFNULL(:description,'')='' OR p.description = :description)
 AND (IFNULL(:name_s,'')='' OR p.name LIKE :name_s)
 AND (IFNULL(:description_s,'')='' OR p.description LIKE :description_s)
 LIMIT :fetchRows
-OFFSET 0
-;
+OFFSET :offsetRows;

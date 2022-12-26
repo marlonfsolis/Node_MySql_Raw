@@ -1,4 +1,3 @@
-import {Pool} from "mysql2/promise";
 
 import {IResult, ResultError} from "../shared/Result";
 import {IGetPermissionsParam, IPermission} from "../models/Permission";
@@ -6,12 +5,10 @@ import PermissionRepository from "../repositories/permissionRepository";
 
 export default class PermissionService
 {
-    private readonly pool: Pool;
     private readonly permRepo:PermissionRepository;
 
-    constructor(pool:Pool) {
-        this.pool = pool;
-        this.permRepo = new PermissionRepository(pool);
+    constructor() {
+        this.permRepo = new PermissionRepository();
     }
 
     /**
@@ -19,7 +16,6 @@ export default class PermissionService
      */
     async getPermissions(params:IGetPermissionsParam): Promise<IResult<IPermission[]>> {
         try {
-            console.log(params);
             return await this.permRepo.getPermissions(params);
         } catch (err) {
             return ResultError.getDefaultError<IPermission[]>(err,`permissionService.getPermissions`);

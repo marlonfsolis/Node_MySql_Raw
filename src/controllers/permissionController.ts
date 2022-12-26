@@ -11,10 +11,11 @@ import {
 import {GetPermissionsParam, IPermission} from "../models/Permission";
 import {IErr} from "../shared/Err";
 
+
 /** Get permission list. */
 export const getPermissions = async (req:Request, res:Response) => {
     const params = new GetPermissionsParam(req.query);
-    const permServ = new PermissionService(req.app.locals.pool);
+    const permServ = new PermissionService();
 
     const result = await permServ.getPermissions(params);
     if (!result.success) {
@@ -33,7 +34,7 @@ export const createPermission = async (req: Request, res: Response) => {
         return new HttpResponseBadRequest(res, errs);
     }
 
-    const permServ = new PermissionService(req.app.locals.pool);
+    const permServ = new PermissionService();
 
     const p = req.body as IPermission;
     const result = await permServ.createPermission(p);
@@ -49,7 +50,7 @@ export const createPermission = async (req: Request, res: Response) => {
 
 /** DELETE a permission */
 export const deletePermission = async (req: Request, res: Response) => {
-    const permServ = new PermissionService(req.app.locals.pool);
+    const permServ = new PermissionService();
 
     const pName = req.params.name;
     const result = await permServ.deletePermission(pName);
@@ -66,7 +67,7 @@ export const deletePermission = async (req: Request, res: Response) => {
 
 /** GET a permission */
 export const getPermission = async (req: Request, res: Response) => {
-    const permServ = new PermissionService(req.app.locals.pool);
+    const permServ = new PermissionService();
 
     const pName = req.params.name;
     const result = await permServ.getPermission(pName);
@@ -89,7 +90,7 @@ export const updatePermission = async (req: Request, res: Response) => {
         return new HttpResponseBadRequest(res, errs);
     }
 
-    const permServ = new PermissionService(req.app.locals.pool);
+    const permServ = new PermissionService();
 
     const pName = req.params.name;
     const p = req.body as IPermission;

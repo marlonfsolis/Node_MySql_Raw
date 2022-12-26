@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 import app from "../app";
-import db from "../shared/Database";
+import {db} from "../shared/Database";
 
 const debug = require('debug')('node-mysql-raw:server');
 const http = require('http');
