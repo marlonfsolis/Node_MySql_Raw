@@ -20,7 +20,8 @@ class DataBaseSingleton
             user: config.db.username,
             password: config.db.password,
             database: config.db.name,
-            host: config.db.host
+            host: config.db.host,
+            namedPlaceholders:true
         };
 
         this.connConfig = { ...basicConnConfig };
@@ -64,27 +65,17 @@ class DataBaseSingleton
         }
     }
 
-    /** Get the data array from a query result. */
-    public getData<Type>(rows:any, idx:number=0) {
-        return rows[idx] as Type;
+    /** Get the object containing the output parameters from a procedure call. */
+    getOutputs(rowData:any) {
+        return rowData[0];
     }
-
-    public rowsAs<Type>(rows: any) {
-        return rows as Type;
-    }
-
-
-    test(outParam: any){
-        outParam = 10;
-    }
-
 
     /**
      * Call a stored procedure and return an object of type SqlResult.
      * @param proc {string} - Procedure name.
      * @param params {Array<SqlParam>} - Array of parameters.
-     * @param conn {Pool|Connection} - Connection to be used. If not passed a new connection will be created.
-     * @return SqlResult
+     * @param conn {Pool|Connection} - Connection to be used. If not passed the current connection pool will be created.
+     * @return SqlResult Result object like {data,outputParams,fields}
      * */
     async call(proc:string, params:SqlParam[], conn?:Pool|Connection):Promise<ISqlResult> {
         if (!conn) conn = this.Pool;
@@ -120,23 +111,7 @@ class DataBaseSingleton
             outResults = this.getOutputs(outRows);
         }
 
-        const callRes:ISqlResult = new SqlResult(fields, outResults);
-        const resultKeys = Object.keys(rows);
-        if (resultKeys.includes("fieldCount")
-            && resultKeys.includes("affectedRows")
-            && resultKeys.includes("insertId")){
-            callRes.resultSetHeader = rows as ResultSetHeader;
-        } else {
-            const data:any[] = [];
-            const len = resultKeys.length - 1;
-            for (let i=0; i<len; i++){
-                data.push((rows as any[])[i]);
-            }
-            callRes.data = data;
-            callRes.resultSetHeader = (rows as any[])[len] as ResultSetHeader;
-        }
-
-        return callRes;
+        return this.createSqlResult(rows, fields, outResults);
 
 
 
@@ -152,9 +127,53 @@ class DataBaseSingleton
         }
     }
 
-    /** Get the object containing the output parameters from a procedure call. */
-    getOutputs(rowData:any) {
-        return rowData[0];
+    /**
+     * Execute a Sql query
+     * @param sql Query to send to the server
+     * @param params Parameters fot the Sql query on Key:Value pair form
+     * @param conn Connection to be used. By default uses the internal connection pool
+     */
+    public async query(sql:string, params: { [key:string]:any }, conn?:Pool|Connection): Promise<ISqlResult> {
+        if (!conn) conn = this.Pool;
+
+        // execute the query
+        const [rows,fields] = await conn.execute(sql, params);
+        // console.log(rows);
+
+        // return the sql result
+        return this.createSqlResult(rows, fields, {}, true);
+    }
+
+    /**
+     * Class to represent s Sql call result
+     * @param rows
+     * @param fields
+     * @param outputParams
+     * @param fromQuery
+     * @private
+     */
+    private createSqlResult(rows:any, fields:any, outputParams:any, fromQuery:boolean=false) {
+        const callRes:ISqlResult = new SqlResult(fields, outputParams);
+        if (fromQuery){
+            callRes.data = rows;
+            return callRes;
+        }
+
+        const resultKeys = Object.keys(rows);
+        if (resultKeys.includes("fieldCount")
+            && resultKeys.includes("affectedRows")
+            && resultKeys.includes("insertId")){
+            callRes.resultSetHeader = rows as ResultSetHeader;
+        } else {
+            const data:any[] = [];
+            const len = resultKeys.length - 1;
+            for (let i=0; i<len; i++){
+                data.push((rows as any[])[i]);
+            }
+            callRes.data = data;
+            callRes.resultSetHeader = (rows as any[])[len] as ResultSetHeader;
+        }
+        return callRes;
     }
 }
 

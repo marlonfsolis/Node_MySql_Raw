@@ -17,7 +17,7 @@ export interface ISqlResult {
     resultSetHeader:object;
     getOutputVal<T>(name:string):T;
     getOutputJsonVal<T>(name:string):T;
-    getData<T>(idx?:number):T[];
+    getData<T>(idx?:number):T;
 }
 
 /** Class to create stored procedure parameters. */
@@ -72,8 +72,12 @@ export class SqlResult implements ISqlResult {
      * Field data can hold multiple results from multiple query statements.
      * @param idx
      */
-    getData<T>(idx:number=0): T[] {
-        return this.data[idx] as T[];
+    getData<T>(idx:number=-1): T {
+        // console.log(this.data);
+        if (idx === -1) {
+            return (this.data as unknown) as T;
+        }
+        return this.data[idx] as T;
     }
 
 }

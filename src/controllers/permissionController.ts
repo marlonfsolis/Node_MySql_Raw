@@ -8,14 +8,15 @@ import {
     HttpResponseInternalServerError, HttpResponseNotFound,
     HttpResponseOk
 } from "../shared/HttpResponse";
-import {IPermission} from "../models/Permission";
+import {GetPermissionsParam, IPermission} from "../models/Permission";
 import {IErr} from "../shared/Err";
 
 /** Get permission list. */
 export const getPermissions = async (req:Request, res:Response) => {
+    const params = new GetPermissionsParam(req.query);
     const permServ = new PermissionService(req.app.locals.pool);
 
-    const result = await permServ.getPermissions();
+    const result = await permServ.getPermissions(params);
     if (!result.success) {
         return new HttpResponseInternalServerError(res, [result.err!]);
     }

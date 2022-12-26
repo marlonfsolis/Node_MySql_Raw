@@ -1,13 +1,11 @@
-import {Pool, ResultSetHeader} from "mysql2/promise";
+import mysql, {Pool, ResultSetHeader} from "mysql2/promise";
 
-import {IPermission} from "../models/Permission";
+import {IGetPermissionsParam, IPermission} from "../models/Permission";
 import {IResult, ResultOk, ResultError} from "../shared/Result";
 import {Err} from "../shared/Err";
 import {IOutputResult, SqlParam} from "../shared/SqlResult";
 import db, {pool, db as db1} from "../shared/Database";
-import path from "path";
-import fs from "fs";
-import {sql, query} from "../queries";
+import {queries, sql} from "../queries";
 
 
 export default class PermissionRepository
@@ -21,7 +19,7 @@ export default class PermissionRepository
     /**
      * Get a permission list
      */
-    async getPermissions(): Promise<IResult<IPermission[]>> {
+    async getPermissions(params:IGetPermissionsParam): Promise<IResult<IPermission[]>> {
         let permissions = [] as IPermission[];
 
         const inValues = [0,0,null,null];
@@ -34,19 +32,19 @@ export default class PermissionRepository
             );
         }
 
-        permissions = r.getData<IPermission>(0);
+        permissions = r.getData<IPermission[]>(0);
 
 
         /* Testing new DataBaseSingleton proc call */
-        const params = [
-            new SqlParam(`offsetRows`,0, `in`),
-            new SqlParam(`fetchRows`,0, `in`),
-            new SqlParam(`filterJson`,null, `in`),
-            new SqlParam(`searchJson`,null, `in`),
-            new SqlParam(`result`,``, `out`)
-        ];
-        const r1 = await db1.call("sp_permissions_readlist",params);
-        console.log(r1.data, r1.getData<IPermission>());
+        // const params = [
+        //     new SqlParam(`offsetRows`,0, `in`),
+        //     new SqlParam(`fetchRows`,0, `in`),
+        //     new SqlParam(`filterJson`,null, `in`),
+        //     new SqlParam(`searchJson`,null, `in`),
+        //     new SqlParam(`result`,``, `out`)
+        // ];
+        // const r1 = await db1.call("sp_permissions_readlist",params);
+        // console.log("Procedure: ", r1.getData<IPermission>());
         // const dataRow = r.getData<IPermission>(0);
         // const outputVal = r.getOutputJsonVal<IOutputResult>("@result");
         // console.log(dataRow, outputVal);
@@ -55,10 +53,17 @@ export default class PermissionRepository
 
 
         /* Testing file queries */
-        // const filePath = path.resolve(__dirname, "../queries/getPermissions.sql");
-        // const sql = fs.readFileSync(filePath, {encoding:"utf8"});
-        // const [rows,fields] = await pool.execute(sql(query.getPermissions), ["Permission1", "Permission 1"]);
-        // permissions = db1.rowsAs<IPermission[]>(rows);
+        const params2 = {
+            name:params.name,
+            description:params.description,
+            name_s:params.name_s,
+            description_s:params.description_s,
+            fetchRows: params.fetchRows.toString(),
+            offsetRows: params.offsetRows.toString()
+        };
+        const r2 = await db1.query(queries.getPermissions, params2);
+        permissions = r2.getData<IPermission[]>();
+
 
         return new ResultOk<IPermission[]>(permissions);
     }
@@ -77,7 +82,7 @@ export default class PermissionRepository
             )
         }
 
-        permission = r.getData<IPermission>(0)[0];
+        permission = r.getData<IPermission[]>(0)[0];
         return new ResultOk(permission);
     }
 
@@ -95,7 +100,7 @@ export default class PermissionRepository
             )
         }
 
-        permission = r.getData<IPermission>(0)[0];
+        permission = r.getData<IPermission[]>(0)[0];
         return new ResultOk(permission);
     }
 
@@ -113,7 +118,7 @@ export default class PermissionRepository
             )
         }
 
-        permission = r.getData<IPermission>(0)[0];
+        permission = r.getData<IPermission[]>(0)[0];
         return new ResultOk(permission);
     }
 
@@ -131,7 +136,7 @@ export default class PermissionRepository
             )
         }
 
-        permission = r.getData<IPermission>(0)[0];
+        permission = r.getData<IPermission[]>(0)[0];
         return new ResultOk(permission);
     }
 }
