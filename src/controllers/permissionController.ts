@@ -8,7 +8,7 @@ import {
     HttpResponseInternalServerError, HttpResponseNotFound,
     HttpResponseOk
 } from "../shared/HttpResponse";
-import {GetPermissionsParam, IPermission} from "../models/Permission";
+import {GetPermissionsParam, IPermission} from "../models/PermissionModel";
 import {IErr} from "../shared/Err";
 
 

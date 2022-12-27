@@ -1,6 +1,6 @@
 import mysql, {Pool, ResultSetHeader} from "mysql2/promise";
 
-import {IGetPermissionsParam, IPermission} from "../models/Permission";
+import {IGetPermissionsParam, IPermission} from "../models/PermissionModel";
 import {IResult, ResultOk, ResultError} from "../shared/Result";
 import {Err} from "../shared/Err";
 import {IOutputResult, SqlParam} from "../shared/SqlResult";

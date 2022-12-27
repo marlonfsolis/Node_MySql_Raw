@@ -1,7 +1,7 @@
 import {Router} from "express";
 
 import * as PermissionController from "../controllers/permissionController";
-import {permissionValidator} from "../models/Permission";
+import {permissionValidator} from "../models/PermissionModel";
 
 
 const router = Router();
