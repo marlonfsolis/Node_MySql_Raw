@@ -6,6 +6,7 @@ import {Err} from "../shared/Err";
 import {IOutputResult, SqlParam} from "../shared/SqlResult";
 import {db} from "../shared/Database";
 import {queries} from "../queries";
+import {param} from "express-validator";
 
 
 export default class PermissionRepository
@@ -44,28 +45,33 @@ export default class PermissionRepository
             fetchRows: params.fetchRows.toString(),
             offsetRows: params.offsetRows.toString()
         };
-        const r2 = await db.query(queries.getPermissions, params2);
+        const r2 = await db.query(queries.permissionList_read, params2);
         permissions = r2.getData<IPermission[]>();
 
 
         return new ResultOk<IPermission[]>(permissions);
     }
 
-    /** Create a permission */
+
+    /**
+     * Create a permission
+     */
     async createPermission(p:IPermission): Promise<IResult<IPermission>> {
         let permission: IPermission|undefined;
 
-        // const inValues = [JSON.stringify(p)];
-        // const r = await db.call("sp_permissions_create", inValues,["@result"], this.pool);
-        // const callResult  = r.getOutputJsonVal<IOutputResult>("@result");
-        //
-        // if (!callResult.success) {
-        //     return new ResultError(
-        //         new Err(callResult.msg, "sp_permissions_create", callResult.errorLogId.toString())
-        //     )
-        // }
-        //
-        // permission = r.getData<IPermission[]>(0)[0];
+        let params:any = { name: p.name };
+        const exists = await db.exists(queries.permissionExists_read, params);
+        if (exists) {
+            return new ResultError(
+                new Err(`400 - Permission exists.`, "permissionRepository.createPermission", `0`)
+            )
+        }
+
+        let sql = `${queries.permission_create} ${queries.permission_read}`;
+        const perRes = await db.query(sql, p, {multiStatements:true});
+        permission = perRes.getData<IPermission[]>(1)[0];
+        // console.log(permission);
+
         return new ResultOk(permission);
     }
 

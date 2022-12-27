@@ -4,5 +4,8 @@ import fs from "fs";
 export const sql = (query:string) => fs.readFileSync(query, {encoding:"utf8"});
 
 export const queries = {
-    getPermissions: sql(path.resolve(__dirname, "getPermissions.sql"))
+    permissionList_read: sql(path.resolve(__dirname, "permission/permissionList_read.sql")),
+    permission_read: sql(path.resolve(__dirname, "permission/permission_read.sql")),
+    permissionExists_read: sql(path.resolve(__dirname, "permission/permissionExists_read.sql")),
+    permission_create: sql(path.resolve(__dirname, "permission/permission_create.sql")),
 }
