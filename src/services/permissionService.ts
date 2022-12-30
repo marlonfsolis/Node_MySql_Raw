@@ -1,8 +1,7 @@
 
-import {IResult, ResultError} from "../shared/Result";
+import {IResult} from "../shared/Result";
 import {IGetPermissionsParam, IPermission} from "../models/PermissionModel";
 import PermissionRepository from "../repositories/permissionRepository";
-import {Err} from "../shared/Err";
 
 export default class PermissionService
 {
@@ -16,11 +15,7 @@ export default class PermissionService
      * Get a permission list
      */
     async getPermissions(params:IGetPermissionsParam): Promise<IResult<IPermission[]>> {
-        try {
-            return await this.permRepo.getPermissions(params);
-        } catch (err) {
-            return ResultError.getDefaultError<IPermission[]>(err,`permissionService.getPermissions`);
-        }
+        return await this.permRepo.getPermissions(params);
     }
 
 
@@ -28,12 +23,7 @@ export default class PermissionService
      * Create a permission
      */
     async createPermission(p:IPermission): Promise<IResult<IPermission>> {
-        throw new Error(`My Error`);
-        // try {
-            return await this.permRepo.createPermission(p);
-        // } catch (err) {
-        //     return ResultError.getDefaultError<IPermission>(err,`permissionService.createPermission`);
-        // }
+        return await this.permRepo.createPermission(p);
     }
 
 
@@ -41,32 +31,20 @@ export default class PermissionService
      * Delete a permission
      */
     async deletePermission(pName:string): Promise<IResult<IPermission>> {
-        try {
-            return await this.permRepo.deletePermission(pName);
-        } catch (err) {
-            return ResultError.getDefaultError<IPermission>(err,`permissionService.deletePermission`);
-        }
+        return await this.permRepo.deletePermission(pName);
     }
 
     /**
      * Get a permission
      */
     async getPermission(pName:string): Promise<IResult<IPermission>> {
-        try {
-            return await this.permRepo.getPermission(pName);
-        } catch (err) {
-            return ResultError.getDefaultError<IPermission>(err,`permissionService.getPermission`);
-        }
+        return await this.permRepo.getPermission(pName);
     }
 
     /**
      * Update a permission
      */
     async updatePermission(pName:string, p:IPermission): Promise<IResult<IPermission>> {
-        try {
-            return await this.permRepo.updatePermission(pName, p);
-        } catch (err) {
-            return ResultError.getDefaultError<IPermission>(err,`permissionService.getPermission`);
-        }
+        return await this.permRepo.updatePermission(pName, p);
     }
 }

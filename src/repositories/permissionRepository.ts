@@ -1,12 +1,9 @@
-import mysql, {Pool, ResultSetHeader} from "mysql2/promise";
-
 import {IGetPermissionsParam, IPermission} from "../models/PermissionModel";
-import {IResult, ResultOk, ResultError} from "../shared/Result";
+import {IResult, ResultOk, ResultErrorBadRequest} from "../shared/Result";
 import {Err} from "../shared/Err";
 import {IOutputResult, SqlParam} from "../shared/SqlResult";
 import {db} from "../shared/Database";
 import {queries} from "../queries";
-import {param} from "express-validator";
 
 
 export default class PermissionRepository
@@ -62,14 +59,14 @@ export default class PermissionRepository
         let params:any = { name: p.name };
         const exists = await db.exists(queries.permissionExists_read, params);
         if (exists) {
-            return new ResultError(
-                new Err(`400 - Permission exists.`, "permissionRepository.createPermission", `0`)
+            return new ResultErrorBadRequest(
+                `Permission already exists.`, `permissionRepository.createPermission`, `0`
             )
         }
 
         let sql = `${queries.permission_create} ${queries.permission_read}`;
         const perRes = await db.query(sql, p, {multiStatements:true});
-        permission = perRes.getData<IPermission[]>(1)[0];
+        permission = perRes.getData<IPermission[]>()[0];
         // console.log(permission);
 
         return new ResultOk(permission);

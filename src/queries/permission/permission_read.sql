@@ -1,5 +1,6 @@
 SELECT
-  name,
-  description
+  p.name,
+  p.description
 FROM permissions p
-WHERE name = :name;
+WHERE p.name = :name
+LIMIT 1;
