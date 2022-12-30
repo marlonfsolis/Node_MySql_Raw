@@ -36,7 +36,7 @@ export class Result<T> implements IResult<T> {
         }
 
         if (!code) return `500`;
-        return code;
+        return code.trim();
     }
 }
 
