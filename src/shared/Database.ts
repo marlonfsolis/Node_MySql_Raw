@@ -10,9 +10,9 @@ export interface IDataBase {
     getNewConnPool(): mysql.Pool;
     getDbConnection(): Promise<mysql.Connection>;
     getNewConnPool(): mysql.Pool;
-    call(proc:string, params:SqlParam[], conn?:Pool|Connection):Promise<ISqlResult>;
-    query(sql:string, params: { [key:string]:any }, options?:IQueryOptions): Promise<ISqlResult>;
-    exists(sql:string, params: { [key:string]:any }, conn?:Pool|Connection): Promise<boolean>;
+    call(proc:string, params?:SqlParam[], conn?:Pool|Connection):Promise<ISqlResult>;
+    query(sql:string, params?: { [key:string]:any }, options?:IQueryOptions): Promise<ISqlResult>;
+    exists(sql:string, params?: { [key:string]:any }, conn?:Pool|Connection): Promise<boolean>;
 }
 
 export interface IQueryOptions {
@@ -94,7 +94,7 @@ class DataBase implements IDataBase
      * @param conn {Pool|Connection} - Connection to be used. If not passed the current connection pool will be created.
      * @return SqlResult Result object like {data,outputParams,fields}
      * */
-    async call(proc:string, params:SqlParam[], conn?:Pool|Connection):Promise<ISqlResult> {
+    async call(proc:string, params?:SqlParam[], conn?:Pool|Connection):Promise<ISqlResult> {
         if (!conn) conn = this.Pool;
 
         // call proc(?,?,??);
@@ -106,7 +106,7 @@ class DataBase implements IDataBase
         const inV = [] as any[];
         const outPH = [] as string[];
         const outV = [] as string[];
-        if (params.length > 0) {
+        if (params && params.length > 0) {
             // very first param
             addParam(params[0]);
             // rest of params
@@ -116,6 +116,7 @@ class DataBase implements IDataBase
         }
         sql = sql.concat(inPH.concat(outV).join());
         sql = sql.concat(");");
+        // console.log(sql);
 
         // execute proc
         const [rows,fields] = await conn.execute(sql, inV.concat(outV));
@@ -150,7 +151,7 @@ class DataBase implements IDataBase
      * @param params Parameters for the Sql query on Key:Value pair form
      * @param options Additional options for the query
      */
-    public async query(sql:string, params: { [key:string]:any }, options?:IQueryOptions): Promise<ISqlResult> {
+    public async query(sql:string, params?: { [key:string]:any }, options?:IQueryOptions): Promise<ISqlResult> {
         if (!options) options = {
             multiStatements:false,
             conn: this.Pool
@@ -178,7 +179,7 @@ class DataBase implements IDataBase
      * @param params Parameters for the Sql query on Key:Value pair form
      * @param conn Connection to be used. By default, uses the internal connection pool
      */
-    public async exists(sql:string, params: { [key:string]:any }, conn?:Pool|Connection): Promise<boolean> {
+    public async exists(sql:string, params?: { [key:string]:any }, conn?:Pool|Connection): Promise<boolean> {
         if (!conn) conn = this.Pool;
 
         // execute the query
@@ -191,7 +192,9 @@ class DataBase implements IDataBase
 
 
     /**
-     * Class to represent s Sql call result
+     * Class to represent s Sql call result.
+     * If more than one [insert, update or delete] is sent,
+     * only the ResultSetHeader for the last one will be returned.
      * @param rows
      * @param fields
      * @param outputParams
@@ -200,26 +203,47 @@ class DataBase implements IDataBase
      */
     private createSqlResult(rows:any, fields:any, outputParams:any, fromQuery:boolean=false) {
         const callRes:ISqlResult = new SqlResult(fields, outputParams);
-        if (fromQuery){
-            callRes.data = rows;
-            return callRes;
-        }
 
-        const resultKeys = Object.keys(rows);
-        if (resultKeys.includes("fieldCount")
-            && resultKeys.includes("affectedRows")
-            && resultKeys.includes("insertId")){
-            callRes.resultSetHeader = rows as ResultSetHeader;
-        } else {
+        // If result is iterable. We can have array of objects, or multiple results.
+        // If result is not iterable. It is a ResultSetHeader (insert, update or delete).
+        if (typeof rows[Symbol.iterator] === "function") {
+            // If the first item is not iterable and it is not the ResultSetHeader
+            // then the result is an array of rows.
+            if (typeof rows[0][Symbol.iterator] !== "function"
+                && !isResultSetHeader(rows[0])) {
+                callRes.data = rows;
+                return callRes;
+            }
+
+            // Otherwise we have multiple result sets
             const data:any[] = [];
-            const len = resultKeys.length - 1;
-            for (let i=0; i<len; i++){
-                data.push((rows as any[])[i]);
+            for (const r of rows) {
+                if (typeof r[Symbol.iterator] === "function") {
+                    data.push(r);
+                } else {
+                    callRes.resultSetHeader = r as ResultSetHeader;
+                }
             }
             callRes.data = data;
-            callRes.resultSetHeader = (rows as any[])[len] as ResultSetHeader;
+        } else {
+            callRes.resultSetHeader = (rows as unknown) as ResultSetHeader;
         }
         return callRes;
+
+
+        /**
+         * Check if the object is of type ResultSetHeader
+         * @param obj
+         */
+        function isResultSetHeader(obj:any) {
+            const objKeys = Object.keys(obj);
+            return !!(objKeys.includes("fieldCount")
+                && objKeys.includes("affectedRows")
+                && objKeys.includes("insertId")
+                && objKeys.includes("info")
+                && objKeys.includes("serverStatus")
+                && objKeys.includes("warningStatus"));
+        }
     }
 }
 

@@ -51,7 +51,7 @@ function normalizePort(val:string) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener for HTTP server "error_queries" event.
  */
 
 function onError(error: any) {
@@ -63,7 +63,7 @@ function onError(error: any) {
     ? 'Pipe ' + port
     : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
+  // handle specific listen error_queries with friendly messages
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');

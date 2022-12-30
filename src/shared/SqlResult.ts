@@ -13,8 +13,8 @@ export interface IOutputResult {
 export interface ISqlResult {
     data:any[];
     fields: any[];
-    outParams:object;
-    resultSetHeader:object;
+    outParams:any;
+    resultSetHeader:ResultSetHeader;
     getOutputVal<T>(name:string):T;
     getOutputJsonVal<T>(name:string):T;
     getData<T>(idx?:number):T;

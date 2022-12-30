@@ -1,5 +1,6 @@
 import {Express} from "express";
 
+import * as ErrorController from "../controllers/errorController";
 import {debug} from "./debuggers";
 
 import routes_index from "../routes/index";
@@ -8,12 +9,14 @@ import permission_routes from "../routes/permissionRoutes";
 
 
 const routesLoader = (app: Express) => {
-
     debug("Loading routes...");
 
     app.use("/api", routes_index);
     app.use("/api/users", routes_users);
     app.use("/api/permissions", permission_routes);
+
+    app.use("*", ErrorController.pageNotFound);
+    app.use(ErrorController.errorNotHandled);
 
     debug("Routes loaded.");
 };

@@ -5,7 +5,7 @@ import {IErr} from "./Err";
 
 /**
  * Represent an HTTP custom response.
- * Client gets a response JSON like { success: true, msg: 'success', errors: [], data: null }
+ * Client gets a response JSON like { success: true, msg: 'success', error_queries: [], data: null }
  * @export
  * @class HttpResponse
  */
@@ -37,7 +37,7 @@ export class HttpResponse {
 
 /**
  * Represent an HTTP response with the status 200 - OK.
- * Client get a JSON like { success: true, msg: 'Success', errors: [], data: null }
+ * Client get a JSON like { success: true, msg: 'Success', error_queries: [], data: null }
  * @export
  * @class HttpResponseOk
  * @extends {HttpResponse}
@@ -56,7 +56,7 @@ export class HttpResponseOk extends HttpResponse {
 
 /**
  * Represent an HTTP response with the status 201 - CREATED.
- * Client get a JSON like { success: true, msg: 'Created', errors: [], data: null }
+ * Client get a JSON like { success: true, msg: 'Created', error_queries: [], data: null }
  * @export
  * @class HttpResponseCreated
  * @extends {HttpResponse}
@@ -75,7 +75,7 @@ export class HttpResponseCreated extends HttpResponse {
 
 /**
  * Represent an HTTP response with the status 400 - BAD REQUEST.
- * <p>Client get a JSON like { success: false, msg: 'Bad request', errors: [], data: null }</p>
+ * <p>Client get a JSON like { success: false, msg: 'Bad request', error_queries: [], data: null }</p>
  * @export
  * @class HttpResponseBadRequest
  * @extends {HttpResponse}
@@ -94,7 +94,7 @@ export class HttpResponseBadRequest extends HttpResponse {
 
 /**
  * Represent an HTTP response with the status 401 - UNAUTHORIZED.
- * <p>Client get a JSON like { success: false, msg: 'Unauthorized', errors: [], data: null }</p>
+ * <p>Client get a JSON like { success: false, msg: 'Unauthorized', error_queries: [], data: null }</p>
  * @export
  * @class HttpResponseUnauthorized
  * @extends {HttpResponse}
@@ -113,7 +113,7 @@ export class HttpResponseUnauthorized  extends HttpResponse {
 
 /**
  * Represent an HTTP response with the status 403 - FORBIDDEN.
- * <p>Client get a JSON like { success: false, msg: 'Forbidden', errors: [], data: null }</p>
+ * <p>Client get a JSON like { success: false, msg: 'Forbidden', error_queries: [], data: null }</p>
  * @export
  * @class HttpResponseForbidden
  * @extends {HttpResponse}
@@ -132,7 +132,7 @@ export class HttpResponseForbidden  extends HttpResponse {
 
 /**
  * Represent an HTTP response with the status 404 - NOT FOUND.
- * <p>Client get a JSON like { success: false, msg: 'Unauthorized', errors: [], data: null }</p>
+ * <p>Client get a JSON like { success: false, msg: 'Unauthorized', error_queries: [], data: null }</p>
  * @export
  * @class HttpResponseNotFound
  * @extends {HttpResponse}
@@ -151,7 +151,7 @@ export class HttpResponseNotFound  extends HttpResponse {
 
 /**
  * Represent an HTTP response with the status 500 - INTERNAL SERVER ERROR.
- * <p>Client get a JSON like { success: false, msg: 'Internal server error', errors: [], data: null }</p>
+ * <p>Client get a JSON like { success: false, msg: 'Internal server error_queries', error_queries: [], data: null }</p>
  * @export
  * @class HttpResponseInternalServerError
  * @extends {HttpResponse}

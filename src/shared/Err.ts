@@ -11,9 +11,9 @@ export interface IErr {
 }
 
 /**
- * Error response class. Is used to create error information to be send to the client.
- * @property {string} msg - Message error
- * @property {string} param - Parameter or path that is not valid or error out.
+ * Error response class. Is used to create error_queries information to be send to the client.
+ * @property {string} msg - Message error_queries
+ * @property {string} param - Parameter or path that is not valid or error_queries out.
  * @property {string|number} value - Current value of the parameter or path.
  * @property {string} location - Location where the parameter or path is located (body, query string, etc.).
  * @property {string} errorLogId - ID of the ErrorLog record on DB.

@@ -11,6 +11,7 @@ import {
 import {GetPermissionsParam, IPermission} from "../models/PermissionModel";
 import {IErr} from "../shared/Err";
 
+const permServ = new PermissionService();
 
 /** Get permission list. */
 export const getPermissions = async (req:Request, res:Response) => {
@@ -34,8 +35,6 @@ export const createPermission = async (req: Request, res: Response) => {
         return new HttpResponseBadRequest(res, errs);
     }
 
-    const permServ = new PermissionService();
-
     const p = req.body as IPermission;
     const result = await permServ.createPermission(p);
     if (!result.success || !result.data) {
@@ -50,8 +49,6 @@ export const createPermission = async (req: Request, res: Response) => {
 
 /** DELETE a permission */
 export const deletePermission = async (req: Request, res: Response) => {
-    const permServ = new PermissionService();
-
     const pName = req.params.name;
     const result = await permServ.deletePermission(pName);
     if (!result.success || !result.data) {
@@ -67,8 +64,6 @@ export const deletePermission = async (req: Request, res: Response) => {
 
 /** GET a permission */
 export const getPermission = async (req: Request, res: Response) => {
-    const permServ = new PermissionService();
-
     const pName = req.params.name;
     const result = await permServ.getPermission(pName);
     if (!result.success || !result.data) {
@@ -89,8 +84,6 @@ export const updatePermission = async (req: Request, res: Response) => {
         const errs = errors.array({ onlyFirstError: false }) as IErr[];
         return new HttpResponseBadRequest(res, errs);
     }
-
-    const permServ = new PermissionService();
 
     const pName = req.params.name;
     const p = req.body as IPermission;

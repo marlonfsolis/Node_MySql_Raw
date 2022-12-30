@@ -3,6 +3,9 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import path from "path";
 
+// help with the errors not handled on async methods
+require('express-async-errors');
+
 // set the config folder path
 process.env["NODE_CONFIG_DIR"] = path.resolve(__dirname, "config");
 

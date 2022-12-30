@@ -2,6 +2,7 @@
 import {IResult, ResultError} from "../shared/Result";
 import {IGetPermissionsParam, IPermission} from "../models/PermissionModel";
 import PermissionRepository from "../repositories/permissionRepository";
+import {Err} from "../shared/Err";
 
 export default class PermissionService
 {
@@ -27,11 +28,12 @@ export default class PermissionService
      * Create a permission
      */
     async createPermission(p:IPermission): Promise<IResult<IPermission>> {
-        try {
+        throw new Error(`My Error`);
+        // try {
             return await this.permRepo.createPermission(p);
-        } catch (err) {
-            return ResultError.getDefaultError<IPermission>(err,`permissionService.createPermission`);
-        }
+        // } catch (err) {
+        //     return ResultError.getDefaultError<IPermission>(err,`permissionService.createPermission`);
+        // }
     }
 
 
