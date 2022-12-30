@@ -23,6 +23,10 @@ export class Result<T> implements IResult<T> {
         this.err = err;
     }
 
+    /**
+     * Get the error code from the error message.
+     * This will look for a text formatted like "500|Error message."
+     */
     getErrorCode() {
         let code = `500`;
         const msgArr = this.err?.msg?.split(`|`);
