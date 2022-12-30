@@ -58,6 +58,13 @@ export class ResultError<T> extends Result<T> {
         );
     }
 
+    /**
+     * Create an instance of a ResultError using an Error object.
+     * This result will log the error
+     * @param err Javascript error
+     * @param detail Any additional detail
+     * @param level Error level.
+     */
     static async instance(err: Error, detail:string=``, level:ErrorLevel=ErrorLevel.Error): Promise<Result<never>> {
         const errorServ = new ErrorService();
         const errorLog = await errorServ.logError(err,detail,level);
@@ -68,6 +75,12 @@ export class ResultError<T> extends Result<T> {
 }
 
 export class ResultErrorBadRequest<T> extends ResultError<T> {
+    /**
+     * This constructor will not log the error on DB.
+     * @param msg
+     * @param location
+     * @param errorLogId
+     */
     constructor(msg: string, location:string, errorLogId: string) {
         if(msg.length === 0) msg = ReasonPhrases.BAD_REQUEST;
         msg = "".concat(StatusCodes.BAD_REQUEST.toString(), "|", msg);

@@ -59,9 +59,14 @@ export default class PermissionRepository
         let params:any = { name: p.name };
         const exists = await db.exists(queries.permissionExists_read, params);
         if (exists) {
-            return new ResultErrorBadRequest(
-                `Permission already exists.`, `permissionRepository.createPermission`, `0`
-            )
+            // // Return an error result without log in DB.
+            // return new ResultErrorBadRequest(
+            //     `Permission already exists.`, `permissionRepository.createPermission`, `0`
+            // )
+
+            // Return an error result and log in DB.
+            return ResultErrorBadRequest.instance(
+                new Error(`Permission already exists.`), `permissionRepository.createPermission`);
         }
 
         let sql = `${queries.permission_create} ${queries.permission_read}`;
