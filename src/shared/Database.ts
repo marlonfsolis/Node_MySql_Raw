@@ -159,17 +159,29 @@ class DataBase implements IDataBase
         if (!options.conn) options.conn = this.Pool;
         const conn = options!.conn;
 
-        // execute the query
-        let rows:any, fields:any;
-        if (options?.multiStatements) {
-            [rows,fields] = await conn.query(sql, params);
-        } else {
-            [rows,fields] = await conn.execute(sql, params);
-        }
-        // console.log(rows);
+        try {
+            // execute the query
+            let rows:any, fields:any;
+            if (options?.multiStatements) {
+                [rows,fields] = await conn.query(sql, params);
+            } else {
+                [rows,fields] = await conn.execute(sql, params);
+            }
+            // console.log(rows);
+            // console.log(sql);
 
-        // return the sql result
-        return this.createSqlResult(rows, fields, {}, true);
+            // return the sql result
+            return this.createSqlResult(rows, fields, {});
+        } catch (e:any) {
+            // check if multiStatements is false and we have possible multiple queries
+            const arrStatements = sql.match(/;/gi);
+            console.log(arrStatements);
+            console.log(arrStatements?.length);
+            if (arrStatements && arrStatements.length > 1 && options.multiStatements === false) {
+                throw Error(`The sql have possible multi statements and multiStatements option is false. Inner: ${e.message}`);
+            }
+            throw e;
+        }
     }
 
 
@@ -198,10 +210,9 @@ class DataBase implements IDataBase
      * @param rows
      * @param fields
      * @param outputParams
-     * @param fromQuery
      * @private
      */
-    private createSqlResult(rows:any, fields:any, outputParams:any, fromQuery:boolean=false) {
+    private createSqlResult(rows:any, fields:any, outputParams:any) {
         const callRes:ISqlResult = new SqlResult(fields, outputParams);
 
         // If result is iterable. We can have array of objects, or multiple results.
@@ -209,8 +220,10 @@ class DataBase implements IDataBase
         if (typeof rows[Symbol.iterator] === "function") {
             // If the first item is not iterable and it is not the ResultSetHeader
             // then the result is an array of rows.
-            if (typeof rows[0][Symbol.iterator] !== "function"
-                && !isResultSetHeader(rows[0])) {
+            if (rows.length === 0 ||
+                (typeof rows[0][Symbol.iterator] !== "function"
+                && !isResultSetHeader(rows[0]))
+            ) {
                 callRes.data = rows;
                 return callRes;
             }

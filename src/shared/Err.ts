@@ -1,3 +1,6 @@
+import {validationResult} from "express-validator";
+
+
 /**
  * Error response interface
  */
@@ -36,4 +39,22 @@ export class Err implements IErr {
         this.errorLogId = errorLogId === undefined ? "0" : errorLogId;
     }
 
+}
+
+
+/**
+ * Validate the parameters on request
+ * */
+export const validateReq = (req:any) => {
+    let isValid = true;
+    let errs = [] as IErr[];
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        isValid = false;
+        errs = errors.array({ onlyFirstError: false }) as IErr[];
+    }
+    return {
+        isValid,
+        errs
+    };
 }

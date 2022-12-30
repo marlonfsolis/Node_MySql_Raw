@@ -1,5 +1,5 @@
 import {IGetPermissionsParam, IPermission} from "../models/PermissionModel";
-import {IResult, ResultOk, ResultErrorBadRequest} from "../shared/Result";
+import {IResult, ResultOk, ResultErrorBadRequest, ResultErrorNotFound} from "../shared/Result";
 import {Err} from "../shared/Err";
 import {IOutputResult, SqlParam} from "../shared/SqlResult";
 import {db} from "../shared/Database";
@@ -77,25 +77,29 @@ export default class PermissionRepository
         return new ResultOk(permission);
     }
 
-    /** Delete a permission */
+
+    /**
+     * Delete a permission
+     */
     async deletePermission(pName:string): Promise<IResult<IPermission>> {
         let permission: IPermission|undefined;
 
-        // const inValues = [pName];
-        // const r = await db.call("sp_permissions_delete", inValues,["@result"], this.pool);
-        // const callResult  = r.getOutputJsonVal<IOutputResult>("@result");
-        //
-        // if (!callResult.success) {
-        //     return new ResultError(
-        //         new Err(callResult.msg, "sp_permissions_delete", callResult.errorLogId.toString())
-        //     )
-        // }
-        //
-        // permission = r.getData<IPermission[]>(0)[0];
+        const params:any = { name: pName };
+        const sql = `${queries.permission_read} ${queries.permission_delete}`;
+        const r = await db.query(sql, params, {multiStatements:true});
+        // console.log(r);
+        if (r.resultSetHeader.affectedRows === 0) {
+                return ResultErrorNotFound.instance(
+                    new Error(`Permission not found.`), `permissionRepository.deletePermission`);
+        }
+        permission = r.getData<IPermission[]>()[0];
         return new ResultOk(permission);
     }
 
-    /** Get a permission */
+
+    /**
+     * Get a permission
+     */
     async getPermission(pName:string): Promise<IResult<IPermission>> {
         let permission: IPermission|undefined;
 
