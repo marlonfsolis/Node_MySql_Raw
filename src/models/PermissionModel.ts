@@ -39,6 +39,20 @@ export class GetPermissionsParam extends GetListParam implements GetPermissionsP
 }
 
 
+/**
+ * Permission model class
+ */
+export class PermissionModel implements IPermission {
+    public description: string;
+    public name: string;
+
+    constructor(p:IPermission) {
+        this.name = p.name;
+        this.description = p.description;
+    }
+}
+
+
 /* Functions */
 
 /**

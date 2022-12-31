@@ -8,7 +8,7 @@ import {
     HttpResponseInternalServerError, HttpResponseNotFound,
     HttpResponseOk
 } from "../shared/HttpResponse";
-import {GetPermissionsParam, IPermission} from "../models/PermissionModel";
+import {GetPermissionsParam, IPermission, PermissionModel} from "../models/PermissionModel";
 import {IErr, validateReq} from "../shared/Err";
 
 const permServ = new PermissionService();
@@ -39,7 +39,7 @@ export const createPermission = async (req: Request, res: Response) => {
         return new HttpResponseBadRequest(res, errs);
     }
 
-    const p = req.body as IPermission;
+    const p = new PermissionModel(req.body as IPermission);
     const result = await permServ.createPermission(p);
     if (!result.success || !result.data) {
         return new HttpResponseError(res, result);
@@ -78,14 +78,13 @@ export const getPermission = async (req: Request, res: Response) => {
 
 /** Put a permission */
 export const updatePermission = async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errs = errors.array({ onlyFirstError: false }) as IErr[];
+    const {isValid, errs} = validateReq(req);
+    if (!isValid) {
         return new HttpResponseBadRequest(res, errs);
     }
 
     const pName = req.params.name;
-    const p = req.body as IPermission;
+    const p = new PermissionModel(req.body as IPermission);
     const result = await permServ.updatePermission(pName, p);
     if (!result.success || !result.data) {
         const code = result.getErrorCode();
