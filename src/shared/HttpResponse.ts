@@ -50,8 +50,8 @@ export class HttpResponseError extends HttpResponse {
      * @param result {any}- Result object containing the error info.
      */
     constructor(res: Response, result: IResult<any>) {
-        let code = StatusCodes.INTERNAL_SERVER_ERROR;
-        let msg = ReasonPhrases.BAD_REQUEST;
+        let code:number;
+        let msg:string;
         const errors = [] as IErr[];
 
         // Find out code and message
@@ -62,8 +62,13 @@ export class HttpResponseError extends HttpResponse {
             case `404`: code = StatusCodes.NOT_FOUND; msg = ReasonPhrases.NOT_FOUND; break;
             default: code = StatusCodes.INTERNAL_SERVER_ERROR; msg = ReasonPhrases.INTERNAL_SERVER_ERROR; break;
         }
+
         // Add error
         if (result.err) errors.push(result.err);
+
+        // Add some detail if data was the issue.
+        if (result.success && !result.data && msg === ReasonPhrases.INTERNAL_SERVER_ERROR)
+            msg = msg.concat(`. Data was invalid.`);
 
         super(res, code, false, msg, errors, null);
     }

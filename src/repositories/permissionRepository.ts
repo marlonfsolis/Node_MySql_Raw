@@ -103,17 +103,16 @@ export default class PermissionRepository
     async getPermission(pName:string): Promise<IResult<IPermission>> {
         let permission: IPermission|undefined;
 
-        // const inValues = [pName];
-        // const r = await db.call("sp_permissions_read", inValues,["@result"], this.pool);
-        // const callResult  = r.getOutputJsonVal<IOutputResult>("@result");
-        //
-        // if (!callResult.success) {
-        //     return new ResultError(
-        //         new Err(callResult.msg, "sp_permissions_read", callResult.errorLogId.toString())
-        //     )
-        // }
-        //
-        // permission = r.getData<IPermission[]>(0)[0];
+        const params:any = { name: pName };
+        const sql = `${queries.permission_read}`;
+        const r = await db.query(sql, params, {multiStatements:false});
+        // console.log(r);
+        permission = r.getData<IPermission[]>()[0];
+        if (typeof permission === `undefined`) {
+            return ResultErrorNotFound.instance(
+                new Error(`Permission not found.`), `permissionRepository.deletePermission`);
+        }
+
         return new ResultOk(permission);
     }
 
