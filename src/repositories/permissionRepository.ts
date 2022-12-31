@@ -1,7 +1,5 @@
 import {IGetPermissionsParam, IPermission} from "../models/PermissionModel";
 import {IResult, ResultOk, ResultErrorBadRequest, ResultErrorNotFound} from "../shared/Result";
-import {Err} from "../shared/Err";
-import {IOutputResult, SqlParam} from "../shared/SqlResult";
 import {db} from "../shared/Database";
 import {queries} from "../queries";
 
@@ -116,21 +114,34 @@ export default class PermissionRepository
         return new ResultOk(permission);
     }
 
-    /** Update a permission */
+    /**
+     * Update a permission
+     */
     async updatePermission(pName:string, p:IPermission): Promise<IResult<IPermission>> {
         let permission: IPermission|undefined;
-        //
-        // const inValues = [pName, JSON.stringify(p)];
-        // const r = await db.call("sp_permissions_update", inValues,["@result"], this.pool);
-        // const callResult  = r.getOutputJsonVal<IOutputResult>("@result");
-        //
-        // if (!callResult.success) {
-        //     return new ResultError(
-        //         new Err(callResult.msg, "sp_permissions_update", callResult.errorLogId.toString())
-        //     )
-        // }
-        //
-        // permission = r.getData<IPermission[]>(0)[0];
+
+        // verify tha new name
+        if (pName !== p.name) {
+            const r = await this.getPermission(p.name);
+            if (r.success && r.data && r.data.name === p.name) {
+                return new ResultErrorBadRequest(
+                    `Permission already exist.`, `permissionRepository.updatePermission`, `0`
+                )
+            }
+        }
+
+        const params = {name:pName, newName:p.name, newDescription:p.description};
+        const sql = `${queries.permission_update}`;
+        let sr = await db.query(sql, params, {multiStatements:true});
+        permission = sr.getData<IPermission[]>(0)[0];
+
+        // verify that was found/updated
+        if (sr.resultSetHeader.affectedRows === 0) {
+            return new ResultErrorNotFound(
+                `Permission not found.`, `permissionRepository.updatePermission`, `0`
+            )
+        }
+
         return new ResultOk(permission);
     }
 }

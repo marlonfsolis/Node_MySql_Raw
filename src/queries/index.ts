@@ -9,6 +9,7 @@ export const queries = {
     permissionExists_read: sql(path.resolve(__dirname, "permission/permissionExists_read.sql")),
     permission_create: sql(path.resolve(__dirname, "permission/permission_create.sql")),
     permission_delete: sql(path.resolve(__dirname, "permission/permission_delete.sql")),
+    permission_update: sql(path.resolve(__dirname, "permission/permission_update.sql")),
 
     error_create: sql(path.resolve(__dirname, "error_queries/error_create.sql"))
 }

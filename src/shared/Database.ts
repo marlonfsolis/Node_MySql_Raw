@@ -175,8 +175,8 @@ class DataBase implements IDataBase
         } catch (e:any) {
             // check if multiStatements is false and we have possible multiple queries
             const arrStatements = sql.match(/;/gi);
-            console.log(arrStatements);
-            console.log(arrStatements?.length);
+            // console.log(arrStatements);
+            // console.log(arrStatements?.length);
             if (arrStatements && arrStatements.length > 1 && options.multiStatements === false) {
                 throw Error(`The sql have possible multi statements and multiStatements option is false. Inner: ${e.message}`);
             }

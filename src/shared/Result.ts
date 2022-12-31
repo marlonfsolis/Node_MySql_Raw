@@ -101,7 +101,7 @@ export class ResultErrorBadRequest<T> extends ResultError<T> {
      */
     constructor(msg: string, location:string, errorLogId: string) {
         if(msg.length === 0) msg = ReasonPhrases.BAD_REQUEST;
-        const r_msg = `${StatusCodes.BAD_REQUEST}|${msg})`;
+        const r_msg = `${StatusCodes.BAD_REQUEST}|${msg}`;
         const err = new Err(r_msg, location, errorLogId);
         super(err);
     }
@@ -127,8 +127,8 @@ export class ResultErrorNotFound<T> extends ResultError<T> {
      */
     constructor(msg: string, location:string, errorLogId: string) {
         if(msg.length === 0) msg = ReasonPhrases.NOT_FOUND;
-        msg = "".concat(StatusCodes.NOT_FOUND.toString(), "|", msg);
-        const err = new Err(msg, location, errorLogId);
+        const r_msg = `${StatusCodes.NOT_FOUND}|${msg}`;
+        const err = new Err(r_msg, location, errorLogId);
         super(err);
     }
 
@@ -153,8 +153,8 @@ export class ResultErrorInternalServer<T> extends ResultError<T> {
      */
     constructor(msg: string, location:string, errorLogId: string) {
         if(msg.length === 0) msg = ReasonPhrases.INTERNAL_SERVER_ERROR;
-        msg = "".concat(StatusCodes.INTERNAL_SERVER_ERROR.toString(), "|", msg);
-        const err = new Err(msg, location, errorLogId);
+        const r_msg = `${StatusCodes.INTERNAL_SERVER_ERROR}|${msg}`;
+        const err = new Err(r_msg, location, errorLogId);
         super(err);
     }
 
