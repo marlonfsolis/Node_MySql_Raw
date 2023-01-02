@@ -23,17 +23,17 @@ export default class RoleService
     /**
      * Create a role
      */
-    async createRole(g:IRole): Promise<IResult<IRole>> {
-        return await this.roleRepo.createRole(g);
+    async createRole(r:IRole): Promise<IResult<IRole>> {
+        return await this.roleRepo.createRole(r);
     }
 
 
     /**
      * Delete a role
      */
-    async deleteRole(gName:string): Promise<IResult<IRole>> {
+    async deleteRole(rName:string): Promise<IResult<IRole>> {
         try {
-            return await this.roleRepo.deleteRole(gName);
+            return await this.roleRepo.deleteRole(rName);
         } catch (err: any) {
             return new ResultErrorInternalServer<IRole>(
                 err.toString(),`roleService.deleteRole`, `0`);
@@ -43,9 +43,9 @@ export default class RoleService
     /**
      * Get a role
      */
-    async getRole(gName:string): Promise<IResult<IRole>> {
+    async retRole(rName:string): Promise<IResult<IRole>> {
         try {
-            return await this.roleRepo.getRole(gName);
+            return await this.roleRepo.getRole(rName);
         } catch (err:any) {
             return new ResultErrorInternalServer<IRole>(
                 err.toString(),`roleService.deleteRole`, `0`);
@@ -55,9 +55,9 @@ export default class RoleService
     /**
      * Update a role
      */
-    async updateRole(gName:string, g:IRole): Promise<IResult<IRole>> {
+    async updateRole(rName:string, r:IRole): Promise<IResult<IRole>> {
         try {
-            return await this.roleRepo.updateRole(gName, g);
+            return await this.roleRepo.updateRole(rName, r);
         } catch (err:any) {
             return new ResultErrorInternalServer<IRole>(
                 err.toString(),`roleService.deleteRole`, `0`);

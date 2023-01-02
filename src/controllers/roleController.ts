@@ -31,20 +31,20 @@ export const getRoles = async (req:Request, res:Response) => {
 
 /** Post a role */
 export const createRole = async (req: Request, res: Response) => {
-    let data: IRole|undefined;
+    let role: IRole|undefined;
 
-    // const {isValid, errs} = validateReq(req);
-    // if (!isValid) {
-    //     return new HttpResponseBadRequest(res, errs);
-    // }
-    //
-    // const g = new RoleModel(req.body as IRole);
-    // const result = await roleServ.createRole(g);
-    // if (!result.success || !result.data) {
-    //     return new HttpResponseError(res, result);
-    // }
+    const {isValid, errs} = validateReq(req);
+    if (!isValid) {
+        return new HttpResponseBadRequest(res, errs);
+    }
 
-    return new HttpResponseCreated(res, data);
+    const r = new RoleModel(req.body as IRole);
+    const result = await roleServ.createRole(r);
+    if (!result.success || !result.data) {
+        return new HttpResponseError(res, result);
+    }
+
+    return new HttpResponseCreated(res, role);
 };
 
 

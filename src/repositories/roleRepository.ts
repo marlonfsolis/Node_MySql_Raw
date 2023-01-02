@@ -4,6 +4,7 @@ import {IRole,GetRolesParam} from "../models/RoleModel";
 import {db} from "../shared/Database";
 import {queries} from "../queries";
 import {dbDebug} from "../startup/debuggers";
+import {IPermission} from "../models/PermissionModel";
 
 
 /**
@@ -32,17 +33,19 @@ export default class RoleRepository
     async createRole(r:IRole): Promise<IResult<IRole>> {
         let role: IRole|undefined;
 
-        // // Check if exists
-        // const exists = await kt.exists(Models.role, {name: r.name});
-        // if (exists) {
-        //     return ResultErrorBadRequest.instance(
-        //         new Error(`Role already exists.`), `roleRepository.createRole`);
-        // }
-        //
-        // await db<IRole>(Models.role).insert(r);
-        // role = await db<IRole>(Models.role)
-        //     .where(`name`, r.name)
-        //     .first(`*`);
+        let params:any = { name: r.name };
+        const exists = await db.exists(queries.roleExists_read, params);
+        if (exists) {
+            // Return an error result without log in DB.
+            return new ResultErrorBadRequest(
+                `Role already exists.`, `roleRepository.createRole`, `0`
+            )
+        }
+
+        let sql = `${queries.role_create} ${queries.role_read}`;
+        const sqlRes = await db.query(sql, r, {multiStatements:true});
+        role = sqlRes.getData<IRole[]>()[0];
+        console.log(sqlRes);
 
         return new ResultOk(role);
     }
