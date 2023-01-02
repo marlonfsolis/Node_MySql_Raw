@@ -45,7 +45,7 @@ export default class RoleRepository
         let sql = `${queries.role_create} ${queries.role_read}`;
         const sqlRes = await db.query(sql, r, {multiStatements:true});
         role = sqlRes.getData<IRole[]>()[0];
-        console.log(sqlRes);
+        // console.log(sqlRes);
 
         return new ResultOk(role);
     }
@@ -77,6 +77,15 @@ export default class RoleRepository
     async getRole(rName:string): Promise<IResult<IRole>> {
         let role: IRole|undefined;
 
+        const params:any = { name: rName };
+        const sr = await db.query(queries.role_read, params);
+        role = sr.getData<IRole[]>()[0];
+        // console.log(sr);
+        if (sr.data.length === 0) {
+            return new ResultErrorNotFound(
+                `Role not found.`, `roleRepository.getRole`, `0`
+            )
+        }
 
         return new ResultOk(role);
     }

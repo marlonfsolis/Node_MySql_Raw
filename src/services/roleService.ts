@@ -35,27 +35,18 @@ export default class RoleService
         return await this.roleRepo.deleteRole(rName);
     }
 
+
     /**
      * Get a role
      */
-    async retRole(rName:string): Promise<IResult<IRole>> {
-        try {
-            return await this.roleRepo.getRole(rName);
-        } catch (err:any) {
-            return new ResultErrorInternalServer<IRole>(
-                err.toString(),`roleService.deleteRole`, `0`);
-        }
+    async getRole(rName:string): Promise<IResult<IRole>> {
+       return await this.roleRepo.getRole(rName);
     }
 
     /**
      * Update a role
      */
     async updateRole(rName:string, r:IRole): Promise<IResult<IRole>> {
-        try {
-            return await this.roleRepo.updateRole(rName, r);
-        } catch (err:any) {
-            return new ResultErrorInternalServer<IRole>(
-                err.toString(),`roleService.deleteRole`, `0`);
-        }
+        return await this.roleRepo.updateRole(rName, r);
     }
 }

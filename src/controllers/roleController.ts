@@ -43,6 +43,7 @@ export const createRole = async (req: Request, res: Response) => {
     if (!result.success || !result.data) {
         return new HttpResponseError(res, result);
     }
+    role = result.data;
 
     return new HttpResponseCreated(res, role);
 };
@@ -71,11 +72,12 @@ export const deleteRole = async (req: Request, res: Response) => {
 export const getRole = async (req: Request, res: Response) => {
     let data: IRole|undefined;
 
-    // const rName = req.params.name;
-    // const result = await roleServ.getRole(rName);
-    // if (!result.success || !result.data) {
-    //     return new HttpResponseError(res, result);
-    // }
+    const rName = req.params.name;
+    const result = await roleServ.getRole(rName);
+    if (!result.success || !result.data) {
+        return new HttpResponseError(res, result);
+    }
+    data = result.data;
 
     return new HttpResponseOk(res, data);
 };
