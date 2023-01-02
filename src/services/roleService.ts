@@ -32,12 +32,7 @@ export default class RoleService
      * Delete a role
      */
     async deleteRole(rName:string): Promise<IResult<IRole>> {
-        try {
-            return await this.roleRepo.deleteRole(rName);
-        } catch (err: any) {
-            return new ResultErrorInternalServer<IRole>(
-                err.toString(),`roleService.deleteRole`, `0`);
-        }
+        return await this.roleRepo.deleteRole(rName);
     }
 
     /**

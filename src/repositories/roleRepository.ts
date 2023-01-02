@@ -54,21 +54,18 @@ export default class RoleRepository
     /**
      * Delete a role
      */
-    async deleteRole(gName:string): Promise<IResult<IRole>> {
+    async deleteRole(rName:string): Promise<IResult<IRole>> {
         let role: IRole|undefined;
 
-        // const query = db<IRole>(Models.role)
-        //     .where(`name`, gName);
-        //
-        // const del = await query.select(`*`);
-        // if (del.length === 0) {
-        //     return new ResultErrorNotFound(
-        //         `RoleModel not found.`, `roleRepository.deleteRole`, `0`
-        //     );
-        // }
-        //
-        // role = del[0];
-        // await query.delete();
+        const params:any = { name: rName };
+        const sql = `${queries.role_read} ${queries.role_delete}`;
+        const r = await db.query(sql, params, {multiStatements:true});
+        // console.log(r);
+        if (r.resultSetHeader.affectedRows === 0) {
+            return ResultErrorNotFound.instance(
+                new Error(`Role not found.`), `roleRepository.deleteRole`);
+        }
+        role = r.getData<IRole[]>()[0];
 
         return new ResultOk(role);
     }
@@ -77,19 +74,10 @@ export default class RoleRepository
     /**
      * Get a role
      */
-    async getRole(gName:string): Promise<IResult<IRole>> {
+    async getRole(rName:string): Promise<IResult<IRole>> {
         let role: IRole|undefined;
 
-        // const roles = await db<IRole>(Models.role)
-        //     .where(`name`, gName)
-        //     .select(`*`);
-        // if (roles.length === 0) {
-        //     return new ResultErrorNotFound(
-        //         `RoleModel not found.`, `roleRepository.getRole`, `0`
-        //     )
-        // }
-        //
-        // role = roles[0];
+
         return new ResultOk(role);
     }
 
@@ -97,38 +85,9 @@ export default class RoleRepository
     /**
      * Update a role
      */
-    async updateRole(gName:string, r:IRole): Promise<IResult<IRole>> {
+    async updateRole(rName:string, r:IRole): Promise<IResult<IRole>> {
         let role: IRole|undefined;
 
-        // // Check if the target exists
-        // let exists = await kt.exists<IRole>(Models.role, {name: gName});
-        // if (!exists) {
-        //     return new ResultErrorNotFound(
-        //         `RoleModel not found.`, `roleRepository.updateRole`, `0`
-        //     )
-        // }
-
-        // // Check if the new name is valid
-        // const newNameExists = await db<IRole>(Models.role)
-        //     .where(`name`,r.name)
-        //     .andWhereNot(`name`, gName)
-        //     .select(`name`);
-        // if (newNameExists.length > 0) {
-        //     return new ResultErrorBadRequest(
-        //         `RoleModel already exists.`, `roleRepository.updateRole`, `0`
-        //     )
-        // }
-        //
-        // // Update
-        // await db<IRole>(Models.role)
-        //     .where(`name`, gName)
-        //     .update(r);
-        //
-        // // Return the new role
-        // const updated = await db<IRole>(Models.role)
-        //     .where(`name`, r.name)
-        //     .select(`*`);
-        // role = updated[0];
 
         return new ResultOk(role);
     }

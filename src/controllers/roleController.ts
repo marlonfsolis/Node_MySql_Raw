@@ -52,15 +52,16 @@ export const createRole = async (req: Request, res: Response) => {
  * DELETE a role
  */
 export const deleteRole = async (req: Request, res: Response) => {
-    let data: IRole|undefined;
+    let role: IRole|undefined;
 
-    // const gName = req.params.name;
-    // const result = await roleServ.deleteRole(gName);
-    // if (!result.success || !result.data) {
-    //     return new HttpResponseError(res, result);
-    // }
+    const rName = req.params.name;
+    const result = await roleServ.deleteRole(rName);
+    if (!result.success || !result.data) {
+        return new HttpResponseError(res, result);
+    }
+    role = result.data;
 
-    return new HttpResponseOk(res, data);
+    return new HttpResponseOk(res, role);
 };
 
 
@@ -70,8 +71,8 @@ export const deleteRole = async (req: Request, res: Response) => {
 export const getRole = async (req: Request, res: Response) => {
     let data: IRole|undefined;
 
-    // const gName = req.params.name;
-    // const result = await roleServ.getRole(gName);
+    // const rName = req.params.name;
+    // const result = await roleServ.getRole(rName);
     // if (!result.success || !result.data) {
     //     return new HttpResponseError(res, result);
     // }
@@ -92,9 +93,9 @@ export const updateRole = async (req: Request, res: Response) => {
     //     return new HttpResponseBadRequest(res, errs);
     // }
     //
-    // const gName = req.params.name;
+    // const rName = req.params.name;
     // const g = req.body as IRole;
-    // const result = await roleServ.updateRole(gName, g);
+    // const result = await roleServ.updateRole(rName, g);
     // if (!result.success || !result.data) {
     //     return new HttpResponseError(res, result);
     // }
