@@ -1,5 +1,4 @@
 import {Request, Response} from "express";
-import {validationResult} from "express-validator";
 
 import PermissionService from "../services/permissionService";
 import {
@@ -9,7 +8,7 @@ import {
     HttpResponseOk
 } from "../shared/HttpResponse";
 import {GetPermissionsParam, IPermission, PermissionModel} from "../models/PermissionModel";
-import {IErr, validateReq} from "../shared/Err";
+import {validateReq} from "../shared/Err";
 
 const permServ = new PermissionService();
 
