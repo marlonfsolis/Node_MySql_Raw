@@ -82,9 +82,7 @@ export default class RoleRepository
         role = sr.getData<IRole[]>()[0];
         // console.log(sr);
         if (sr.data.length === 0) {
-            return new ResultErrorNotFound(
-                `Role not found.`, `roleRepository.getRole`, `0`
-            )
+            return new ResultErrorNotFound(`Role not found.`, `roleRepository.getRole`);
         }
 
         return new ResultOk(role);
