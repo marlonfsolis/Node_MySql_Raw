@@ -49,8 +49,8 @@ export class GetRolesParam extends GetListParam implements IGetRolesParam {
     constructor(val:any) {
         val = (val as unknown) as IGetRolesParam;
         super(val);
-        this.name = val?.name_f?.toString() || ``;
-        this.description = val?.description_f?.toString() || ``;
+        this.name = val?.name?.toString() || ``;
+        this.description = val?.description?.toString() || ``;
         this.name_s = val?.name_s?.toString() || ``;
         this.description_s = val?.description_s?.toString() || ``;
     }

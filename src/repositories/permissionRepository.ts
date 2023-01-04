@@ -120,7 +120,7 @@ export default class PermissionRepository
     async updatePermission(pName:string, p:IPermission): Promise<IResult<IPermission>> {
         let permission: IPermission|undefined;
 
-        // verify tha new name
+        // verify the new name
         if (pName !== p.name) {
             const r = await this.getPermission(p.name);
             if (r.success && r.data && r.data.name === p.name) {

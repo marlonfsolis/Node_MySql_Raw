@@ -16,6 +16,7 @@ export default class RoleService
      * Get a role list
      */
     async getRoles(params:GetRolesParam): Promise<IResult<IRole[]>> {
+        // console.log(params);
         return await this.roleRepo.getRoles(params);
     }
 

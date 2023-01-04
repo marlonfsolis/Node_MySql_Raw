@@ -89,18 +89,18 @@ export const getRole = async (req: Request, res: Response) => {
 export const updateRole = async (req: Request, res: Response) => {
     let data: IRole|undefined;
 
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //     const errs = errors.array({ onlyFirstError: false }) as IErr[];
-    //     return new HttpResponseBadRequest(res, errs);
-    // }
-    //
-    // const rName = req.params.name;
-    // const g = req.body as IRole;
-    // const result = await roleServ.updateRole(rName, g);
-    // if (!result.success || !result.data) {
-    //     return new HttpResponseError(res, result);
-    // }
+    const {isValid, errs} = validateReq(req);
+    if (!isValid) {
+        return new HttpResponseBadRequest(res, errs);
+    }
+
+    const rName = req.params.name;
+    const r = new RoleModel(req.body as IRole);
+    const result = await roleServ.updateRole(rName, r);
+    if (!result.success || !result.data) {
+        return new HttpResponseError(res, result);
+    }
+    data = result.data;
 
     return new HttpResponseOk(res, data);
 };

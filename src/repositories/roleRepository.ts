@@ -1,4 +1,10 @@
-import {IResult, ResultOk, ResultErrorNotFound, ResultErrorBadRequest} from "../shared/Result";
+import {
+    IResult,
+    ResultOk,
+    ResultErrorNotFound,
+    ResultErrorBadRequest,
+    ResultErrorInternalServer
+} from "../shared/Result";
 import {RoleModel} from "../models/RoleModel";
 import {IRole,GetRolesParam} from "../models/RoleModel";
 import {db} from "../shared/Database";
@@ -95,7 +101,48 @@ export default class RoleRepository
     async updateRole(rName:string, r:IRole): Promise<IResult<IRole>> {
         let role: IRole|undefined;
 
+        // verify that the role exists
+        let sqlRes = await this.getRole(rName);
+        if (!sqlRes.success || !sqlRes.data || sqlRes.data.name !== rName) {
+            return new ResultErrorNotFound(`Role not found.`, `roleRepository.updateRole`);
+        }
 
-        return new ResultOk(role);
+        // verify the new name
+        if (rName !== r.name) {
+            sqlRes = await this.getRole(r.name);
+            if (sqlRes.success && sqlRes.data && sqlRes.data.name === r.name) {
+                return new ResultErrorBadRequest(`Role already exist.`, `roleRepository.updateRole`);
+            }
+        }
+
+        // update now
+        let result: IResult<any>;
+        const resultInternalError =
+            new ResultErrorInternalServer(`There was a problem updating the role.`, `roleRepository.updateRole`);
+        const conn = await db.Pool.getConnection();
+        await conn.beginTransaction();
+
+        try {
+            const params:any = { name: rName, newName: r.name, newDescription: r.description };
+            const sr = await db.query(queries.role_update, params, {multiStatements:true, conn});
+            role = sr.getData<IRole[]>()[0];
+            // console.log(role, sr.resultSetHeader);
+
+            if (typeof role !== `undefined`) {
+                await conn.commit();
+                conn.release();
+                return new ResultOk(role);
+
+            } else {
+                result = resultInternalError;
+            }
+        } catch (e) {
+            result = resultInternalError
+            // console.log(`Error catch. Error: ${e}`);
+        }
+
+        await conn.rollback();
+        conn.release();
+        return result;
     }
 }
