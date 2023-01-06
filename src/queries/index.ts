@@ -18,5 +18,7 @@ export const queries = {
     role_delete: sql(path.resolve(__dirname, "role/role_delete.sql")),
     role_update: sql(path.resolve(__dirname, "role/role_update.sql")),
 
+    roleWithPermissions_read: sql(path.resolve(__dirname, "role/roleWithPermissions_read.sql")),
+
     error_create: sql(path.resolve(__dirname, "error_queries/error_create.sql"))
 }

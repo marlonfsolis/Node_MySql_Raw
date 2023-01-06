@@ -5,12 +5,13 @@ import {
     ResultErrorBadRequest,
     ResultErrorInternalServer
 } from "../shared/Result";
-import {RoleModel} from "../models/RoleModel";
+import {IRoleWithPermissions, RoleModel} from "../models/RoleModel";
 import {IRole,GetRolesParam} from "../models/RoleModel";
 import {db} from "../shared/Database";
 import {queries} from "../queries";
 import {dbDebug} from "../startup/debuggers";
 import {IPermission} from "../models/PermissionModel";
+import {getRoleWithPermissions} from "../controllers/roleController";
 
 
 /**
@@ -144,5 +145,25 @@ export default class RoleRepository
         await conn.rollback();
         conn.release();
         return result;
+    }
+
+
+    /**
+     * Get a role with permissions
+     */
+    async getRoleWithPermissions(rName:string): Promise<IResult<IRoleWithPermissions>> {
+        let role = {} as IRoleWithPermissions;
+
+        const params:any = { name: rName };
+        const sr = await db.query(queries.roleWithPermissions_read, params, {multiStatements:true});
+        // console.log(sr.data);
+        role.role = sr.getData<IRole[]>(0)[0];
+        role.permissions = sr.getData<IPermission[]>(1);
+        // console.log(role);
+        if (typeof role.role === `undefined`) {
+            return new ResultErrorNotFound(`Role not found.`, `roleRepository.getRole`);
+        }
+
+        return new ResultOk(role);
     }
 }

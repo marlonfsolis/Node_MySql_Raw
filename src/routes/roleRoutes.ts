@@ -21,4 +21,7 @@ router.delete('/:name', RoleController.deleteRole);
 /* GET a role */
 router.get('/:name', RoleController.getRole);
 
+/* GET a role with permissions */
+router.get('/with-permissions/:name', RoleController.getRoleWithPermissions);
+
 export default router;

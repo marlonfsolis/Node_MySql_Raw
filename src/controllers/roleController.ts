@@ -6,7 +6,7 @@ import {
     HttpResponseError,
     HttpResponseOk
 } from "../shared/HttpResponse";
-import {IRole, RoleModel, GetRolesParam} from "../models/RoleModel";
+import {IRole, RoleModel, GetRolesParam, IRoleWithPermissions} from "../models/RoleModel";
 import {validateReq} from "../shared/Err";
 import RoleService from "../services/roleService";
 
@@ -97,6 +97,23 @@ export const updateRole = async (req: Request, res: Response) => {
     const rName = req.params.name;
     const r = new RoleModel(req.body as IRole);
     const result = await roleServ.updateRole(rName, r);
+    if (!result.success || !result.data) {
+        return new HttpResponseError(res, result);
+    }
+    data = result.data;
+
+    return new HttpResponseOk(res, data);
+};
+
+
+/**
+ * GET Role with permissions
+ */
+export const getRoleWithPermissions = async (req: Request, res: Response) => {
+    let data: IRoleWithPermissions|undefined;
+
+    const rName = req.params.name;
+    const result = await roleServ.getRoleWithPermissions(rName);
     if (!result.success || !result.data) {
         return new HttpResponseError(res, result);
     }

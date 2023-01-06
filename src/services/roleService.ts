@@ -1,6 +1,7 @@
 import {IResult, ResultErrorInternalServer} from "../shared/Result";
-import {IRole, GetRolesParam} from "../models/RoleModel";
+import {IRole, GetRolesParam, IRoleWithPermissions} from "../models/RoleModel";
 import RoleRepository from "../repositories/roleRepository";
+import {getRoleWithPermissions} from "../controllers/roleController";
 
 
 export default class RoleService
@@ -49,5 +50,12 @@ export default class RoleService
      */
     async updateRole(rName:string, r:IRole): Promise<IResult<IRole>> {
         return await this.roleRepo.updateRole(rName, r);
+    }
+
+    /**
+     * Get a role with permissions
+     */
+    async getRoleWithPermissions(rName:string): Promise<IResult<IRoleWithPermissions>> {
+        return await this.roleRepo.getRoleWithPermissions(rName);
     }
 }

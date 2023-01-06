@@ -1,6 +1,7 @@
 import {check} from "express-validator";
 
 import {GetListParam, IGetListParam} from "./index";
+import {IPermission} from "./PermissionModel";
 
 
 
@@ -9,6 +10,11 @@ import {GetListParam, IGetListParam} from "./index";
 export interface IRole {
     name:string;
     description:string;
+}
+
+export interface IRoleWithPermissions {
+    role: IRole;
+    permissions: IPermission[];
 }
 
 export interface IGetRolesParam extends IGetListParam {
