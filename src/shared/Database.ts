@@ -152,6 +152,13 @@ class DataBase implements IDataBase
      * @param options Additional options for the query
      */
     public async query(sql:string, params?: { [key:string]:any }, options?:IQueryOptions): Promise<ISqlResult> {
+        // set undefined to null. MySql does not allow undefined.
+        if (params) {
+            for (const k of Object.keys(params)) {
+                if (params[k] === undefined) params[k] = null;
+            }
+        }
+
         if (!options) options = {
             multiStatements:false,
             conn: this.Pool
